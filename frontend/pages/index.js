@@ -5,18 +5,18 @@ export default function Home() {
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
 
-  // Delete message function
+  // Delete function - SIMPLE AND WORKING
   const deleteMessage = (index) => {
-    const updatedMessages = messages.filter((_, i) => i !== index)
-    setMessages(updatedMessages)
+    const newMessages = messages.filter((_, i) => i !== index)
+    setMessages(newMessages)
   }
 
   async function sendMessage() {
     if (!input.trim()) return
     setLoading(true)
-    const newMessages = [...messages, { role: 'user', content: input }];
-    setMessages(newMessages);
-    setInput('');
+    const newMessages = [...messages, { role: 'user', content: input }]
+    setMessages(newMessages)
+    setInput('')
 
     try {
       const res = await fetch('http://localhost:8000/api/chat', {
@@ -37,7 +37,7 @@ export default function Home() {
     <div style={{ maxWidth: '800px', margin: '2rem auto', fontFamily: 'Arial, sans-serif', padding: '1rem' }}>
       <h1>AI Chat Assistant</h1>
 
-      {/* Chat box with delete buttons */}
+      {/* Chat messages with delete buttons */}
       <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '1rem', minHeight: '300px', marginBottom: '1rem' }}>
         {messages.map((m, i) => (
           <div key={i} style={{ 
@@ -56,24 +56,22 @@ export default function Home() {
             <button
               onClick={() => deleteMessage(i)}
               style={{
-                padding: '4px 8px',
+                padding: '5px 10px',
                 fontSize: '12px',
                 backgroundColor: '#ff4444',
                 color: 'white',
                 border: 'none',
-                borderRadius: '3px',
-                cursor: 'pointer',
-                marginLeft: '10px'
+                borderRadius: '4px',
+                cursor: 'pointer'
               }}
-              title="Delete message"
             >
-              ×
+              Delete
             </button>
           </div>
         ))}
       </div>
 
-      {/* Input box and send button */}
+      {/* Input area */}
       <div style={{ display: 'flex', gap: '8px' }}>
         <input
           value={input}
