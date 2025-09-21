@@ -1,56 +1,79 @@
 import { useState } from 'react'
 
 export default function Home() {
-  // These are "state variables" that hold our data
-  const [input, setInput] = useState('') // Holds the message the user is typing
-  const [messages, setMessages] = useState([]) // Holds the list of all messages
-  const [loading, setLoading] = useState(false) // Keeps track of when we are waiting for the AI
+  const [input, setInput] = useState('')
+  const [messages, setMessages] = useState([])
+  const [loading, setLoading] = useState(false)
 
-  // This function runs when the user clicks "Send"
+  // Delete message function
+  const deleteMessage = (index) => {
+    const updatedMessages = messages.filter((_, i) => i !== index)
+    setMessages(updatedMessages)
+  }
+
   async function sendMessage() {
-    if (!input.trim()) return // Don't do anything if the message is empty
-    setLoading(true) // We are now loading
-
-    // Add the user's message to the list
+    if (!input.trim()) return
+    setLoading(true)
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
-    setInput(''); // Clear the input box
+    setInput('');
 
     try {
-      // Send the conversation to OUR backend server
       const res = await fetch('http://localhost:8000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newMessages }),
       })
       const data = await res.json()
-
-      // Add the AI's response to the list of messages
       setMessages((m) => [...m, { role: 'assistant', content: data.reply }])
     } catch (err) {
-      // If there's an error (e.g., server is off), show it
       setMessages((m) => [...m, { role: 'assistant', content: 'Error: ' + err.message }])
     } finally {
-      setLoading(false) // We are done loading
+      setLoading(false)
     }
   }
 
-  // This is what the webpage looks like
   return (
     <div style={{ maxWidth: '800px', margin: '2rem auto', fontFamily: 'Arial, sans-serif', padding: '1rem' }}>
       <h1>AI Chat Assistant</h1>
 
-      {/* This is the chat box */}
+      {/* Chat box with delete buttons */}
       <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '1rem', minHeight: '300px', marginBottom: '1rem' }}>
         {messages.map((m, i) => (
-          <div key={i} style={{ marginBottom: '0.5rem', padding: '0.5rem', backgroundColor: m.role === 'user' ? '#f0f0f0' : '#e6f7ff', borderRadius: '5px' }}>
-            <strong>{m.role === 'user' ? 'You: ' : 'AI: '}</strong>
-            {m.content}
+          <div key={i} style={{ 
+            marginBottom: '0.5rem', 
+            padding: '0.5rem', 
+            backgroundColor: m.role === 'user' ? '#f0f0f0' : '#e6f7ff', 
+            borderRadius: '5px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <div>
+              <strong>{m.role === 'user' ? 'You: ' : 'AI: '}</strong>
+              {m.content}
+            </div>
+            <button
+              onClick={() => deleteMessage(i)}
+              style={{
+                padding: '4px 8px',
+                fontSize: '12px',
+                backgroundColor: '#ff4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '3px',
+                cursor: 'pointer',
+                marginLeft: '10px'
+              }}
+              title="Delete message"
+            >
+              ×
+            </button>
           </div>
         ))}
       </div>
 
-      {/* This is the input box and send button */}
+      {/* Input box and send button */}
       <div style={{ display: 'flex', gap: '8px' }}>
         <input
           value={input}
