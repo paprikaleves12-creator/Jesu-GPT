@@ -15,7 +15,11 @@ app = FastAPI(title="AI Chat Starter")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=[
+        "http://localhost:3000", 
+        "http://127.0.0.1:3000",
+        "https://jesu-gpt.vercel.app"  # ← ADD THIS LINE
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,7 +39,7 @@ async def chat_endpoint(request: ChatRequest):
     try:
         # Use Groq API with a current model
         completion = client.chat.completions.create(
-            model="llama-3.1-8b-instant",  # CHANGED TO CURRENT MODEL
+            model="llama-3.1-8b-instant",
             messages=request.messages,
             max_tokens=250
         )
